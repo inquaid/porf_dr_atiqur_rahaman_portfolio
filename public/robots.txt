@@ -4,4 +4,4 @@ User-agent: *
 Allow: /
 
 # Sitemap location
-Sitemap: https://azmaininquaid.mind-byte.com/sitemap.xml
+Sitemap: https://portfolio.local/sitemap.xml

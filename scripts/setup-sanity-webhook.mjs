@@ -1,10 +1,12 @@
 import dotenv from 'dotenv';
 dotenv.config();
 
-const projectId = process.env.VITE_SANITY_PROJECT_ID || 'naf7d8as';
+const projectId = process.env.VITE_SANITY_PROJECT_ID || 'oxu258yz';
 const token = process.env.SANITY_API_TOKEN;
-const webhookSecret = process.env.SANITY_WEBHOOK_SECRET || 'turjo_sanity_webhook_secret_2026_secure';
-const targetUrl = 'https://azmaininquaid.mind-byte.com/api/sanity-webhook';
+const webhookSecret = process.env.SANITY_WEBHOOK_SECRET || 'atiqur_sanity_webhook_secret_2026_secure';
+const targetUrl = process.env.VITE_SITE_URL
+  ? `${process.env.VITE_SITE_URL.replace(/\/$/, '')}/api/sanity-webhook`
+  : 'https://portfolio.local/api/sanity-webhook';
 
 async function setupWebhook() {
   console.log(`Checking existing webhooks for Sanity project ${projectId}...`);

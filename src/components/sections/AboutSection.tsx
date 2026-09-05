@@ -176,17 +176,12 @@ const AboutSection: React.FC<AboutSectionProps> = ({ id, isActive }) => {
 
   const aboutParagraphs = profile?.aboutParagraphs?.length
     ? profile.aboutParagraphs
-    : [
-        "I'm a driven Computer Science and Engineering student at Khulna University with hands-on expertise spanning robotics (Arduino), AI/ML, software development, and creative digital design. My passion lies in building impactful technology solutions that bridge hardware and software to solve real-world challenges.",
-        "Through academic projects and self-driven exploration, I've cultivated a versatile skill set—from programming and electronics to multimedia tools like Photoshop, Illustrator, and Premiere Pro.",
-      ];
+    : profile?.heroBio
+      ? [profile.heroBio]
+      : [];
 
-  const infoGrid = profile?.infoGrid || {
-    name: profile?.fullName || 'Azmain Inquaid Haque',
-    email: 'azmaininquaidhaque@gmail.com',
-    location: 'Khulna, Bangladesh',
-    field: 'Computer Science',
-  };
+  const infoGrid = profile?.infoGrid || {};
+  const displayName = infoGrid.name || profile?.fullName;
 
   return (
     <SectionContainer id={id} isActive={isActive}>
@@ -209,10 +204,10 @@ const AboutSection: React.FC<AboutSectionProps> = ({ id, isActive }) => {
           ))}
 
           <InfoGrid>
-            {infoGrid.name && (
+            {displayName && (
               <InfoItem>
                 <InfoLabel>Name:</InfoLabel>
-                <InfoValue>{infoGrid.name}</InfoValue>
+                <InfoValue>{displayName}</InfoValue>
               </InfoItem>
             )}
             {infoGrid.email && (

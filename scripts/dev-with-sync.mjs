@@ -6,7 +6,7 @@ const isWindows = process.platform === 'win32';
 const npmCmd = isWindows ? 'npm.cmd' : 'npm';
 
 // 1. Spawn Vite dev server
-const viteProcess = spawn(npmCmd, ['run', 'dev'], {
+const viteProcess = spawn(npmCmd, ['run', 'dev:vite'], {
   stdio: 'inherit',
   shell: true,
 });

@@ -1,16 +1,16 @@
 import { createClient } from '@supabase/supabase-js';
 
-const SANITY_PROJECT_ID = process.env.VITE_SANITY_PROJECT_ID || 'naf7d8as';
+const SANITY_PROJECT_ID = process.env.VITE_SANITY_PROJECT_ID || 'oxu258yz';
 const SANITY_DATASET = process.env.VITE_SANITY_DATASET || 'production';
-const SANITY_WEBHOOK_SECRET = process.env.SANITY_WEBHOOK_SECRET || 'turjo_sanity_webhook_secret_2026_secure';
+const SANITY_WEBHOOK_SECRET = process.env.SANITY_WEBHOOK_SECRET || 'atiqur_sanity_webhook_secret_2026_secure';
 const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
 function getSupabaseClient() {
-  const url = process.env.VITE_SUPABASE_URL || 'https://dscbuqfnenaiukympxjr.supabase.co';
+  const url = process.env.VITE_SUPABASE_URL || '';
   const key =
     process.env.SUPABASE_SERVICE_ROLE_KEY ||
     process.env.VITE_SUPABASE_ANON_KEY ||
-    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRzY2J1cWZuZW5haXVreW1weGpyIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4ODI5MTMzMywiZXhwIjoyMTAzODY3MzMzfQ.P8hy7D6rP0CUWoDIAwjmli1js_SzKNk5u6D492TiFTU';
+    '';
   return createClient(url, key);
 }
 
@@ -116,13 +116,13 @@ export const handler = async (event: any) => {
       case 'siteSettings': {
         const row = {
           sanity_id: _id,
-          site_name: payload.siteName || 'Azmain Inquaid Haque',
-          site_url: payload.siteUrl || 'https://azmaininquaid.mind-byte.com',
+          site_name: payload.siteName || '',
+          site_url: payload.siteUrl || '',
           site_description: payload.siteDescription || null,
           site_keywords: payload.siteKeywords || [],
           site_image_url: getSanityImageUrl(payload.siteImage) || '/profile-image.jpg',
-          logo_initials: payload.logoInitials || 'AI',
-          twitter_handle: payload.twitterHandle || '@azmain_inquaid',
+          logo_initials: payload.logoInitials || '',
+          twitter_handle: payload.twitterHandle || '',
           theme_color: payload.themeColor || '#6366f1',
           updated_at: new Date().toISOString(),
         };
@@ -133,8 +133,8 @@ export const handler = async (event: any) => {
       case 'profile': {
         const row = {
           sanity_id: _id,
-          full_name: payload.fullName || 'Azmain Inquaid Haque',
-          short_name: payload.shortName || 'Azmain Inquaid',
+          full_name: payload.fullName || '',
+          short_name: payload.shortName || '',
           profile_image_url: getSanityImageUrl(payload.profileImage) || '/profile_pic.jpg',
           hero_image_url: getSanityImageUrl(payload.heroImage) || '/home2.webp',
           typewriter_titles: payload.typewriterTitles || [],
@@ -142,9 +142,11 @@ export const handler = async (event: any) => {
           about_paragraphs: payload.aboutParagraphs || [],
           info_grid: payload.infoGrid || {},
           resume_file_url: getSanityFileUrl(payload.resumeFile) || '/resume.pdf',
-          resume_file_name: payload.resumeFileName || 'Resume_Azmain_Inquaid_Haque.pdf',
-          drive_url: payload.driveUrl || 'https://drive.google.com',
-          drive_password: payload.drivePassword || '1234',
+          resume_file_name:
+            payload.resumeFileName ||
+            (payload.fullName ? `Resume_${payload.fullName.replace(/[^a-zA-Z0-9_-]/g, '_')}.pdf` : 'Resume.pdf'),
+          drive_url: payload.driveUrl || '',
+          drive_password: payload.drivePassword || '',
           updated_at: new Date().toISOString(),
         };
         syncResult = await supabase.from('profiles').upsert(row, { onConflict: 'sanity_id' });
@@ -230,7 +232,7 @@ export const handler = async (event: any) => {
           sanity_id: _id,
           title: payload.title,
           slug: payload.slug?.current || _id,
-          author: payload.author || 'Inquaid',
+          author: payload.author || '',
           image_url: getSanityImageUrl(payload.mainImage) || '/demo.png',
           category: payload.category || 'General',
           tags: payload.tags || [],

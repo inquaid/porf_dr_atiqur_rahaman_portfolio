@@ -3,9 +3,9 @@ import { createClient } from "npm:@supabase/supabase-js@2";
 
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL") || "";
 const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") || "";
-const SANITY_PROJECT_ID = Deno.env.get("SANITY_PROJECT_ID") || "naf7d8as";
+const SANITY_PROJECT_ID = Deno.env.get("SANITY_PROJECT_ID") || "oxu258yz";
 const SANITY_DATASET = Deno.env.get("SANITY_DATASET") || "production";
-const SANITY_WEBHOOK_SECRET = Deno.env.get("SANITY_WEBHOOK_SECRET") || "turjo_sanity_webhook_secret_2026_secure";
+const SANITY_WEBHOOK_SECRET = Deno.env.get("SANITY_WEBHOOK_SECRET") || "atiqur_sanity_webhook_secret_2026_secure";
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 
@@ -115,13 +115,13 @@ Deno.serve(async (req: Request) => {
       case "siteSettings": {
         const row = {
           sanity_id: _id,
-          site_name: payload.siteName || "Azmain Inquaid Haque",
-          site_url: payload.siteUrl || "https://azmaininquaid.mind-byte.com",
+          site_name: payload.siteName || "",
+          site_url: payload.siteUrl || "",
           site_description: payload.siteDescription || null,
           site_keywords: payload.siteKeywords || [],
           site_image_url: getSanityImageUrl(payload.siteImage) || "/profile-image.jpg",
-          logo_initials: payload.logoInitials || "AI",
-          twitter_handle: payload.twitterHandle || "@azmain_inquaid",
+          logo_initials: payload.logoInitials || "",
+          twitter_handle: payload.twitterHandle || "",
           theme_color: payload.themeColor || "#6366f1",
           updated_at: new Date().toISOString(),
         };
@@ -132,8 +132,8 @@ Deno.serve(async (req: Request) => {
       case "profile": {
         const row = {
           sanity_id: _id,
-          full_name: payload.fullName || "Azmain Inquaid Haque",
-          short_name: payload.shortName || "Azmain Inquaid",
+          full_name: payload.fullName || "",
+          short_name: payload.shortName || "",
           profile_image_url: getSanityImageUrl(payload.profileImage) || "/profile_pic.jpg",
           hero_image_url: getSanityImageUrl(payload.heroImage) || "/home2.webp",
           typewriter_titles: payload.typewriterTitles || [],
@@ -141,9 +141,11 @@ Deno.serve(async (req: Request) => {
           about_paragraphs: payload.aboutParagraphs || [],
           info_grid: payload.infoGrid || {},
           resume_file_url: getSanityFileUrl(payload.resumeFile) || "/resume.pdf",
-          resume_file_name: payload.resumeFileName || "Resume_Azmain_Inquaid_Haque.pdf",
-          drive_url: payload.driveUrl || "https://drive.google.com",
-          drive_password: payload.drivePassword || "1234",
+          resume_file_name:
+            payload.resumeFileName ||
+            (payload.fullName ? `Resume_${payload.fullName.replace(/[^a-zA-Z0-9_-]/g, "_")}.pdf` : "Resume.pdf"),
+          drive_url: payload.driveUrl || "",
+          drive_password: payload.drivePassword || "",
           updated_at: new Date().toISOString(),
         };
         syncResult = await supabase.from("profiles").upsert(row, { onConflict: "sanity_id" });
@@ -229,7 +231,7 @@ Deno.serve(async (req: Request) => {
           sanity_id: _id,
           title: payload.title,
           slug: payload.slug?.current || _id,
-          author: payload.author || "Inquaid",
+          author: payload.author || "",
           image_url: getSanityImageUrl(payload.mainImage) || "/demo.png",
           category: payload.category || "General",
           tags: payload.tags || [],

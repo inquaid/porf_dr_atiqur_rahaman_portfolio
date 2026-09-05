@@ -8,6 +8,7 @@ import UnifiedSEO from '../components/common/UnifiedSEO';
 import NameHeading from '../components/common/NameHeading';
 import { useBlogPost } from '../hooks/useBlogPosts';
 import { useMetrics } from '../hooks/useMetrics';
+import { useProfile } from '../hooks/useProfile';
 import { urlFor } from '../lib/sanity';
 
 // Global style to ensure proper scroll behavior
@@ -83,6 +84,7 @@ const BlogPostPage: React.FC = () => {
   const { slug } = useParams<{ slug: string }>();
   const navigate = useNavigate();
 
+  const { data: profile } = useProfile();
   const { data: sanityPost, isLoading } = useBlogPost(slug);
   const { metrics, recordView, recordLike } = useMetrics(slug, 'post');
 
@@ -99,6 +101,8 @@ const BlogPostPage: React.FC = () => {
     document.documentElement.scrollTop = 0;
     document.body.scrollTop = 0;
   }, []);
+
+  const authorName = sanityPost?.author || profile?.fullName || '';
 
   const post: UnifiedBlogPostData | null = sanityPost
     ? {
@@ -119,7 +123,7 @@ const BlogPostPage: React.FC = () => {
         excerpt: sanityPost.excerpt,
         tags: sanityPost.tags || [],
         body: sanityPost.body || undefined,
-        author: sanityPost.author || 'Azmain Inquaid Haque',
+        author: authorName,
       }
     : null;
 
@@ -129,12 +133,12 @@ const BlogPostPage: React.FC = () => {
       <ScrollBehaviorReset />
       {post && (
         <UnifiedSEO
-          title={`${post.title} | Azmain Inquaid Haque`}
-          description={`${post.excerpt} - Article by Azmain Inquaid Haque`}
+          title={`${post.title}${authorName ? ` | ${authorName}` : ''}`}
+          description={post.excerpt || `${post.title} - Academic article`}
           keywords={post.tags.join(', ')}
           image={post.image}
           type="article"
-          author="Azmain Inquaid Haque"
+          author={authorName || undefined}
           publishedTime={post.date}
           section="blog"
         />
@@ -148,8 +152,9 @@ const BlogPostPage: React.FC = () => {
         ) : post ? (
           <>
             <NameHeading
+              name={authorName}
               title={post.title}
-              subtitle={`Written by ${post.author || 'Azmain Inquaid Haque'} on ${post.date}`}
+              subtitle={authorName ? `Written by ${authorName} on ${post.date}` : `Published on ${post.date}`}
             />
             <BlogPostComponent
               post={post}

@@ -5,6 +5,7 @@ import SectionContainer from '../layout/SectionContainer';
 import { FaBook } from 'react-icons/fa';
 import { IconWrapper } from '../common/IconWrapper';
 import { useResearch } from '../../hooks/useResearch';
+import { useProfile } from '../../hooks/useProfile';
 
 type ResearchSectionProps = {
   id: string;
@@ -114,13 +115,16 @@ const itemVariants = {
 
 const ResearchSection: React.FC<ResearchSectionProps> = ({ id, isActive }) => {
   const { data: sanityResearch } = useResearch();
+  const { data: profile } = useProfile();
 
   const displayPublications =
     sanityResearch && sanityResearch.length > 0
       ? sanityResearch.map((r, idx) => ({
           id: r._id || r.id || idx + 1,
           title: r.title,
-          authors: Array.isArray(r.authors) ? r.authors.join(', ') : r.authors || 'Azmain Inquaid Haque',
+          authors: Array.isArray(r.authors)
+            ? r.authors.join(', ')
+            : r.authors || profile?.fullName || '',
           venue: [r.conference, r.year].filter(Boolean).join(', '),
           abstract: r.abstract,
           link: r.pdfUrl || r.doi || '#',

@@ -349,24 +349,14 @@ const HomeSection: React.FC<HomeSectionProps> = ({ id, isActive }) => {
   const [error, setError] = useState(false);
   const passwordInputRef = useRef<HTMLInputElement>(null);
 
-  const fullName = profile?.fullName || 'Azmain Inquaid Haque';
-  const heroBio =
-    profile?.heroBio ||
-    "I'm currently pursuing a BSc at Khulna University with a strong passion for problem solving and emerging technologies. My interests lie in Artificial Intelligence, Machine Learning, and Robotics.";
+  const fullName = profile?.fullName || '';
+  const heroBio = profile?.heroBio || '';
   const typewriterTitles = profile?.typewriterTitles?.length
     ? profile.typewriterTitles
-    : [
-        'Learner & Problem Solver',
-        'Researcher',
-        'AI/ML Enthusiast',
-        'Competitive Programmer',
-        'Tech Explorer',
-      ];
+    : ['Researcher', 'Academic', 'Computer Scientist'];
   const heroImage = profile?.heroImageUrl || '/home2.webp';
-  const driveUrl =
-    profile?.driveUrl ||
-    'https://drive.google.com/drive/folders/1AjPKExOHfQOYoltJLqh_AyYTay3sRiMj?usp=drive_link';
-  const drivePassword = profile?.drivePassword || '1234';
+  const driveUrl = profile?.driveUrl || '';
+  const drivePassword = profile?.drivePassword || '';
 
   useEffect(() => {
     if (showPasswordModal) {
@@ -376,6 +366,11 @@ const HomeSection: React.FC<HomeSectionProps> = ({ id, isActive }) => {
 
   const handleDriveClick = (e: React.MouseEvent) => {
     e.preventDefault();
+    if (!driveUrl) return;
+    if (!drivePassword) {
+      window.open(driveUrl, '_blank', 'noopener,noreferrer');
+      return;
+    }
     setPassword('');
     setError(false);
     setShowPasswordModal(true);

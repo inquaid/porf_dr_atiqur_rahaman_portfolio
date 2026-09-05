@@ -9,14 +9,12 @@ export const siteSettingsType = defineType({
       name: 'siteName',
       title: 'Site Name',
       type: 'string',
-      initialValue: 'Azmain Inquaid Haque',
       validation: (Rule) => Rule.required(),
     }),
     defineField({
       name: 'siteUrl',
       title: 'Site URL',
       type: 'url',
-      initialValue: 'https://azmaininquaid.mind-byte.com',
       validation: (Rule) => Rule.required(),
     }),
     defineField({
@@ -24,8 +22,6 @@ export const siteSettingsType = defineType({
       title: 'Default SEO Description',
       type: 'text',
       rows: 3,
-      initialValue:
-        'Official portfolio of Azmain Inquaid Haque – Researcher specializing in AI/ML, UI/UX design, React, Node.js, and competitive problem solving. Based in Khulna, Bangladesh.',
       validation: (Rule) => Rule.required(),
     }),
     defineField({
@@ -49,13 +45,11 @@ export const siteSettingsType = defineType({
       name: 'logoInitials',
       title: 'Logo Initials (Splash Screen)',
       type: 'string',
-      initialValue: 'AI',
     }),
     defineField({
       name: 'twitterHandle',
       title: 'Twitter / X Handle',
       type: 'string',
-      initialValue: '@azmain_inquaid',
     }),
     defineField({
       name: 'themeColor',

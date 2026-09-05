@@ -107,8 +107,18 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ onComplete, minimumDuration
   const { data: siteSettings } = useSiteSettings();
   const { data: profile } = useProfile();
 
-  const initials = siteSettings?.logoInitials || 'AI';
-  const splashName = (profile?.shortName || profile?.fullName || 'AZMAIN INQUAID').toUpperCase();
+  const initials =
+    siteSettings?.logoInitials ||
+    (profile?.shortName || profile?.fullName || '')
+      .split(' ')
+      .filter((w) => !/^(dr|prof|md|phd)\.?$/i.test(w))
+      .filter(Boolean)
+      .map((w) => w[0])
+      .slice(0, 2)
+      .join('')
+      .toUpperCase() ||
+    'AR';
+  const splashName = (profile?.shortName || profile?.fullName || 'PORTFOLIO').toUpperCase();
 
   useEffect(() => {
     const startTime = Date.now();

@@ -1,4 +1,19 @@
 import { supabase } from '../lib/supabase';
+import { urlFor } from '../lib/sanity';
+import {
+  getSanitySiteSettings,
+  getSanityProfile,
+  getSanitySocialLinks,
+  getSanityEducation,
+  getSanityExperience,
+  getSanitySkillCategories,
+  getSanityProjects,
+  getSanityPosts,
+  getSanityPostBySlug,
+  getSanityResearch,
+  getSanityAchievements,
+  getSanityActivities,
+} from '../sanity/queries';
 import type {
   SiteSettings,
   Profile,
@@ -12,6 +27,35 @@ import type {
   Achievement,
   Activity,
 } from '../db/schema';
+
+// Helper for building Sanity file download URLs
+const sanityProjectId = import.meta.env.VITE_SANITY_PROJECT_ID || 'oxu258yz';
+const sanityDataset = import.meta.env.VITE_SANITY_DATASET || 'production';
+
+function getSanityFileUrl(source: any): string | null {
+  if (!source?.asset?._ref) return null;
+  try {
+    const ref = source.asset._ref;
+    const parts = ref.split('-');
+    if (parts.length >= 3) {
+      const assetId = parts[1];
+      const ext = parts[2];
+      return `https://cdn.sanity.io/files/${sanityProjectId}/${sanityDataset}/${assetId}.${ext}`;
+    }
+  } catch {
+    // fallback
+  }
+  return null;
+}
+
+function getSanityImageUrl(source: any): string | null {
+  if (!source?.asset?._ref) return null;
+  try {
+    return urlFor(source).url();
+  } catch {
+    return null;
+  }
+}
 
 // Normalization Helpers to bridge PostgreSQL snake_case rows and TypeScript camelCase schemas
 
@@ -201,35 +245,221 @@ function normalizeActivity(row: any): Activity {
   };
 }
 
+// Sanity Mappers to convert Sanity objects directly to app entities
+
+function mapSanitySiteSettings(doc: any): SiteSettings {
+  return {
+    id: doc._id,
+    sanityId: doc._id,
+    siteName: doc.siteName || '',
+    siteUrl: doc.siteUrl || '',
+    siteDescription: doc.siteDescription || null,
+    siteKeywords: doc.siteKeywords || [],
+    siteImageUrl: getSanityImageUrl(doc.siteImage) || '/profile-image.jpg',
+    logoInitials: doc.logoInitials || '',
+    twitterHandle: doc.twitterHandle || '',
+    themeColor: doc.themeColor || '#6366f1',
+    updatedAt: new Date(),
+  };
+}
+
+function mapSanityProfile(doc: any): Profile {
+  return {
+    id: doc._id,
+    sanityId: doc._id,
+    fullName: doc.fullName || '',
+    shortName: doc.shortName || '',
+    profileImageUrl: getSanityImageUrl(doc.profileImage) || '/profile_pic.jpg',
+    heroImageUrl: getSanityImageUrl(doc.heroImage) || '/home2.webp',
+    typewriterTitles: doc.typewriterTitles || [],
+    heroBio: doc.heroBio || '',
+    aboutParagraphs: doc.aboutParagraphs || [],
+    infoGrid: doc.infoGrid || {},
+    resumeFileUrl: getSanityFileUrl(doc.resumeFile) || '/resume.pdf',
+    resumeFileName:
+      doc.resumeFileName ||
+      (doc.fullName ? `Resume_${doc.fullName.replace(/[^a-zA-Z0-9_-]/g, '_')}.pdf` : 'Resume.pdf'),
+    driveUrl: doc.driveUrl || '',
+    drivePassword: doc.drivePassword || '',
+    updatedAt: new Date(),
+  };
+}
+
+function mapSanitySocialLink(doc: any): SocialLink {
+  return {
+    id: doc._id,
+    sanityId: doc._id,
+    platform: doc.platform,
+    label: doc.label,
+    url: doc.url,
+    section: doc.section || 'both',
+    order: doc.order ?? 10,
+    updatedAt: new Date(),
+  };
+}
+
+function mapSanityEducation(doc: any): Education {
+  return {
+    id: doc._id,
+    sanityId: doc._id,
+    period: doc.period,
+    title: doc.title,
+    institution: doc.institution,
+    description: doc.description || null,
+    order: doc.order ?? 10,
+    updatedAt: new Date(),
+  };
+}
+
+function mapSanityExperience(doc: any): Experience {
+  return {
+    id: doc._id,
+    sanityId: doc._id,
+    period: doc.period,
+    title: doc.title,
+    location: doc.location,
+    description: doc.description,
+    order: doc.order ?? 10,
+    updatedAt: new Date(),
+  };
+}
+
+function mapSanitySkillCategory(doc: any): SkillCategory {
+  return {
+    id: doc._id,
+    sanityId: doc._id,
+    categoryId: doc.categoryId,
+    title: doc.title,
+    order: doc.order ?? 10,
+    skills: doc.skills || [],
+    updatedAt: new Date(),
+  };
+}
+
+function mapSanityProject(doc: any): Project {
+  return {
+    id: doc._id,
+    sanityId: doc._id,
+    title: doc.title,
+    slug: doc.slug?.current || doc._id,
+    category: doc.category || 'all',
+    description: doc.description,
+    imageUrl: getSanityImageUrl(doc.mainImage) || '/demo.png',
+    techStack: doc.techStack || [],
+    githubUrl: doc.githubUrl || null,
+    liveUrl: doc.liveUrl || null,
+    featured: Boolean(doc.featured),
+    order: doc.order ?? 10,
+    updatedAt: new Date(),
+  };
+}
+
+function mapSanityPost(doc: any): Post {
+  return {
+    id: doc._id,
+    sanityId: doc._id,
+    title: doc.title,
+    slug: doc.slug?.current || doc._id,
+    author: doc.author || '',
+    imageUrl: getSanityImageUrl(doc.mainImage) || '/demo.png',
+    category: doc.category || 'General',
+    tags: doc.tags || [],
+    publishedAt: doc.publishedAt ? new Date(doc.publishedAt) : new Date(),
+    excerpt: doc.excerpt || '',
+    featured: Boolean(doc.featured),
+    body: doc.body || [],
+    updatedAt: new Date(),
+  };
+}
+
+function mapSanityResearch(doc: any): ResearchItem {
+  return {
+    id: doc._id,
+    sanityId: doc._id,
+    title: doc.title,
+    slug: doc.slug?.current || doc._id,
+    conference: doc.conference,
+    year: String(doc.year),
+    abstract: doc.abstract,
+    authors: doc.authors || [],
+    pdfUrl: doc.pdfUrl || null,
+    doi: doc.doi || null,
+    order: doc.order ?? 10,
+    updatedAt: new Date(),
+  };
+}
+
+function mapSanityAchievement(doc: any): Achievement {
+  return {
+    id: doc._id,
+    sanityId: doc._id,
+    type: doc.type,
+    platformName: doc.platformName || null,
+    account: doc.account || null,
+    accountUrl: doc.accountUrl || null,
+    highestRating: doc.highestRating || null,
+    solveCount: doc.solveCount || null,
+    contestCount: doc.contestCount || null,
+    contestName: doc.contestName || null,
+    date: doc.date || null,
+    result: doc.result || null,
+    description: doc.description || null,
+    order: doc.order ?? 10,
+    updatedAt: new Date(),
+  };
+}
+
+function mapSanityActivity(doc: any): Activity {
+  return {
+    id: doc._id,
+    sanityId: doc._id,
+    title: doc.title,
+    description: doc.description,
+    iconKey: doc.iconKey,
+    date: doc.date,
+    order: doc.order ?? 10,
+    updatedAt: new Date(),
+  };
+}
+
 /**
- * Service to retrieve content directly from Supabase PostgreSQL.
- * All public read operations are secured via PostgreSQL Row Level Security (RLS).
+ * Service to retrieve content with seamless fallback.
+ * Primary: Supabase PostgreSQL via Row Level Security (RLS)
+ * Fallback: Sanity Content Lake via CDN
  */
 
 export async function getSiteSettings(): Promise<SiteSettings | null> {
   try {
-    const { data, error } = await supabase.from('site_settings').select('*').limit(1).maybeSingle();
-    if (error) {
-      console.error('Error fetching site_settings from Supabase:', error.message);
-      return null;
+    const { data } = await supabase.from('site_settings').select('*').limit(1).maybeSingle();
+    if (data) {
+      return normalizeSiteSettings(data);
     }
-    return data ? normalizeSiteSettings(data) : null;
   } catch (err) {
-    console.error('Failed to fetch site_settings:', err);
+    console.warn('Supabase site_settings query failed, falling back to Sanity:', err);
+  }
+  try {
+    const sanityDoc = await getSanitySiteSettings();
+    return sanityDoc ? mapSanitySiteSettings(sanityDoc) : null;
+  } catch (err) {
+    console.error('Failed to fetch site_settings from Sanity fallback:', err);
     return null;
   }
 }
 
 export async function getProfile(): Promise<Profile | null> {
   try {
-    const { data, error } = await supabase.from('profiles').select('*').limit(1).maybeSingle();
-    if (error) {
-      console.error('Error fetching profiles from Supabase:', error.message);
-      return null;
+    const { data } = await supabase.from('profiles').select('*').limit(1).maybeSingle();
+    if (data) {
+      return normalizeProfile(data);
     }
-    return data ? normalizeProfile(data) : null;
   } catch (err) {
-    console.error('Failed to fetch profiles:', err);
+    console.warn('Supabase profiles query failed, falling back to Sanity:', err);
+  }
+  try {
+    const sanityDoc = await getSanityProfile();
+    return sanityDoc ? mapSanityProfile(sanityDoc) : null;
+  } catch (err) {
+    console.error('Failed to fetch profile from Sanity fallback:', err);
     return null;
   }
 }
@@ -240,143 +470,183 @@ export async function getSocialLinks(section?: 'home' | 'contact'): Promise<Soci
     if (section) {
       query = query.or(`section.eq.${section},section.eq.both`);
     }
-    const { data, error } = await query;
-    if (error) {
-      console.error('Error fetching social_links from Supabase:', error.message);
-      return [];
+    const { data } = await query;
+    if (data && data.length > 0) {
+      return data.map(normalizeSocialLink);
     }
-    return (data || []).map(normalizeSocialLink);
   } catch (err) {
-    console.error('Failed to fetch social_links:', err);
+    console.warn('Supabase social_links query failed, falling back to Sanity:', err);
+  }
+  try {
+    const sanityDocs = await getSanitySocialLinks(section);
+    return (sanityDocs || []).map(mapSanitySocialLink);
+  } catch (err) {
+    console.error('Failed to fetch social_links from Sanity fallback:', err);
     return [];
   }
 }
 
 export async function getEducation(): Promise<Education[]> {
   try {
-    const { data, error } = await supabase.from('education').select('*').order('order', { ascending: true });
-    if (error) {
-      console.error('Error fetching education from Supabase:', error.message);
-      return [];
+    const { data } = await supabase.from('education').select('*').order('order', { ascending: true });
+    if (data && data.length > 0) {
+      return data.map(normalizeEducation);
     }
-    return (data || []).map(normalizeEducation);
   } catch (err) {
-    console.error('Failed to fetch education:', err);
+    console.warn('Supabase education query failed, falling back to Sanity:', err);
+  }
+  try {
+    const sanityDocs = await getSanityEducation();
+    return (sanityDocs || []).map(mapSanityEducation);
+  } catch (err) {
+    console.error('Failed to fetch education from Sanity fallback:', err);
     return [];
   }
 }
 
 export async function getExperience(): Promise<Experience[]> {
   try {
-    const { data, error } = await supabase.from('experience').select('*').order('order', { ascending: true });
-    if (error) {
-      console.error('Error fetching experience from Supabase:', error.message);
-      return [];
+    const { data } = await supabase.from('experience').select('*').order('order', { ascending: true });
+    if (data && data.length > 0) {
+      return data.map(normalizeExperience);
     }
-    return (data || []).map(normalizeExperience);
   } catch (err) {
-    console.error('Failed to fetch experience:', err);
+    console.warn('Supabase experience query failed, falling back to Sanity:', err);
+  }
+  try {
+    const sanityDocs = await getSanityExperience();
+    return (sanityDocs || []).map(mapSanityExperience);
+  } catch (err) {
+    console.error('Failed to fetch experience from Sanity fallback:', err);
     return [];
   }
 }
 
 export async function getSkillCategories(): Promise<SkillCategory[]> {
   try {
-    const { data, error } = await supabase.from('skill_categories').select('*').order('order', { ascending: true });
-    if (error) {
-      console.error('Error fetching skill_categories from Supabase:', error.message);
-      return [];
+    const { data } = await supabase.from('skill_categories').select('*').order('order', { ascending: true });
+    if (data && data.length > 0) {
+      return data.map(normalizeSkillCategory);
     }
-    return (data || []).map(normalizeSkillCategory);
   } catch (err) {
-    console.error('Failed to fetch skill_categories:', err);
+    console.warn('Supabase skill_categories query failed, falling back to Sanity:', err);
+  }
+  try {
+    const sanityDocs = await getSanitySkillCategories();
+    return (sanityDocs || []).map(mapSanitySkillCategory);
+  } catch (err) {
+    console.error('Failed to fetch skill_categories from Sanity fallback:', err);
     return [];
   }
 }
 
 export async function getProjects(): Promise<Project[]> {
   try {
-    const { data, error } = await supabase.from('projects').select('*').order('order', { ascending: true });
-    if (error) {
-      console.error('Error fetching projects from Supabase:', error.message);
-      return [];
+    const { data } = await supabase.from('projects').select('*').order('order', { ascending: true });
+    if (data && data.length > 0) {
+      return data.map(normalizeProject);
     }
-    return (data || []).map(normalizeProject);
   } catch (err) {
-    console.error('Failed to fetch projects:', err);
+    console.warn('Supabase projects query failed, falling back to Sanity:', err);
+  }
+  try {
+    const sanityDocs = await getSanityProjects();
+    return (sanityDocs || []).map(mapSanityProject);
+  } catch (err) {
+    console.error('Failed to fetch projects from Sanity fallback:', err);
     return [];
   }
 }
 
 export async function getPosts(): Promise<Post[]> {
   try {
-    const { data, error } = await supabase
+    const { data } = await supabase
       .from('posts')
       .select('*')
       .order('published_at', { ascending: false });
-    if (error) {
-      console.error('Error fetching posts from Supabase:', error.message);
-      return [];
+    if (data && data.length > 0) {
+      return data.map(normalizePost);
     }
-    return (data || []).map(normalizePost);
   } catch (err) {
-    console.error('Failed to fetch posts:', err);
+    console.warn('Supabase posts query failed, falling back to Sanity:', err);
+  }
+  try {
+    const sanityDocs = await getSanityPosts();
+    return (sanityDocs || []).map(mapSanityPost);
+  } catch (err) {
+    console.error('Failed to fetch posts from Sanity fallback:', err);
     return [];
   }
 }
 
 export async function getPostBySlug(slug: string): Promise<Post | null> {
   try {
-    const { data, error } = await supabase.from('posts').select('*').eq('slug', slug).maybeSingle();
-    if (error) {
-      console.error(`Error fetching post [${slug}] from Supabase:`, error.message);
-      return null;
+    const { data } = await supabase.from('posts').select('*').eq('slug', slug).maybeSingle();
+    if (data) {
+      return normalizePost(data);
     }
-    return data ? normalizePost(data) : null;
   } catch (err) {
-    console.error(`Failed to fetch post [${slug}]:`, err);
+    console.warn(`Supabase post [${slug}] query failed, falling back to Sanity:`, err);
+  }
+  try {
+    const sanityDoc = await getSanityPostBySlug(slug);
+    return sanityDoc ? mapSanityPost(sanityDoc) : null;
+  } catch (err) {
+    console.error(`Failed to fetch post [${slug}] from Sanity fallback:`, err);
     return null;
   }
 }
 
 export async function getResearch(): Promise<ResearchItem[]> {
   try {
-    const { data, error } = await supabase.from('research').select('*').order('order', { ascending: true });
-    if (error) {
-      console.error('Error fetching research from Supabase:', error.message);
-      return [];
+    const { data } = await supabase.from('research').select('*').order('order', { ascending: true });
+    if (data && data.length > 0) {
+      return data.map(normalizeResearch);
     }
-    return (data || []).map(normalizeResearch);
   } catch (err) {
-    console.error('Failed to fetch research:', err);
+    console.warn('Supabase research query failed, falling back to Sanity:', err);
+  }
+  try {
+    const sanityDocs = await getSanityResearch();
+    return (sanityDocs || []).map(mapSanityResearch);
+  } catch (err) {
+    console.error('Failed to fetch research from Sanity fallback:', err);
     return [];
   }
 }
 
 export async function getAchievements(): Promise<Achievement[]> {
   try {
-    const { data, error } = await supabase.from('achievements').select('*').order('order', { ascending: true });
-    if (error) {
-      console.error('Error fetching achievements from Supabase:', error.message);
-      return [];
+    const { data } = await supabase.from('achievements').select('*').order('order', { ascending: true });
+    if (data && data.length > 0) {
+      return data.map(normalizeAchievement);
     }
-    return (data || []).map(normalizeAchievement);
   } catch (err) {
-    console.error('Failed to fetch achievements:', err);
+    console.warn('Supabase achievements query failed, falling back to Sanity:', err);
+  }
+  try {
+    const sanityDocs = await getSanityAchievements();
+    return (sanityDocs || []).map(mapSanityAchievement);
+  } catch (err) {
+    console.error('Failed to fetch achievements from Sanity fallback:', err);
     return [];
   }
 }
 
 export async function getActivities(): Promise<Activity[]> {
   try {
-    const { data, error } = await supabase.from('activities').select('*').order('order', { ascending: true });
-    if (error) {
-      console.error('Error fetching activities from Supabase:', error.message);
-      return [];
+    const { data } = await supabase.from('activities').select('*').order('order', { ascending: true });
+    if (data && data.length > 0) {
+      return data.map(normalizeActivity);
     }
-    return (data || []).map(normalizeActivity);
   } catch (err) {
-    console.error('Failed to fetch activities:', err);
+    console.warn('Supabase activities query failed, falling back to Sanity:', err);
+  }
+  try {
+    const sanityDocs = await getSanityActivities();
+    return (sanityDocs || []).map(mapSanityActivity);
+  } catch (err) {
+    console.error('Failed to fetch activities from Sanity fallback:', err);
     return [];
   }
 }

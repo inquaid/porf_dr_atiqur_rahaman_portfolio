@@ -1,7 +1,7 @@
 {
-  "short_name": "Azmain Haque",
-  "name": "Azmain Inquaid Haque - Portfolio",
-  "description": "Official portfolio of Azmain Inquaid Haque (Turjo) - Researcher specializing in AI/ML, UI/UX design, React, Node.js, and competitive problem solving.",
+  "short_name": "Portfolio",
+  "name": "Academic & Professional Portfolio",
+  "description": "Official academic and professional portfolio showcasing research, publications, and projects.",
   "icons": [
     {
       "src": "favicon.ico",

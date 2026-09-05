@@ -25,7 +25,6 @@ export const postType = defineType({
       name: 'author',
       title: 'Author',
       type: 'string',
-      initialValue: 'Inquaid',
     }),
     defineField({
       name: 'mainImage',

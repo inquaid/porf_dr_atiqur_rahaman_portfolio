@@ -4,7 +4,7 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 const client = createClient({
-  projectId: process.env.VITE_SANITY_PROJECT_ID || 'naf7d8as',
+  projectId: process.env.VITE_SANITY_PROJECT_ID || 'oxu258yz',
   dataset: process.env.VITE_SANITY_DATASET || 'production',
   apiVersion: process.env.VITE_SANITY_API_VERSION || '2024-03-01',
   token: process.env.SANITY_API_TOKEN,
@@ -12,28 +12,28 @@ const client = createClient({
 });
 
 async function seed() {
-  console.log('🚀 Seeding / Updating Sanity Studio with default portfolio documents...');
+  console.log('🚀 Checking Sanity Studio documents...');
+  const profileCount = await client.fetch('count(*[_type == "profile"])');
+  if (profileCount > 0) {
+    console.log(`⚠️ Documents already exist in Sanity (${profileCount} profiles). Skipping default seed to preserve your custom data.`);
+    return;
+  }
 
   // 1. Site Settings
   const siteSettingsDoc = {
     _id: 'siteSettings_singleton',
     _type: 'siteSettings',
-    siteName: 'Azmain Inquaid Haque',
-    siteUrl: 'https://azmaininquaid.mind-byte.com',
-    siteDescription:
-      'Official portfolio of Azmain Inquaid Haque – Researcher specializing in AI/ML, UI/UX design, React, Node.js, and competitive problem solving. Based in Khulna, Bangladesh.',
+    siteName: 'Prof. Dr. GM Atiqur Rahaman',
+    siteUrl: process.env.VITE_SITE_URL || 'https://portfolio.local',
+    siteDescription: 'Official academic and research portfolio of Prof. Dr. GM Atiqur Rahaman.',
     siteKeywords: [
-      'Azmain Inquaid Haque',
+      'Prof. Dr. GM Atiqur Rahaman',
+      'Professor',
       'Researcher',
-      'AI ML Engineer',
-      'UI UX Designer',
-      'React Developer',
-      'Competitive Programming',
-      'Khulna University',
+      'Computer Science',
       'Portfolio',
     ],
-    logoInitials: 'AI',
-    twitterHandle: '@azmain_inquaid',
+    logoInitials: 'AR',
     themeColor: '#6366f1',
   };
   await client.createOrReplace(siteSettingsDoc);
@@ -43,46 +43,60 @@ async function seed() {
   const profileDoc = {
     _id: 'profile_singleton',
     _type: 'profile',
-    fullName: 'Azmain Inquaid Haque',
-    shortName: 'Azmain Inquaid',
+    fullName: 'Prof. Dr. GM Atiqur Rahaman',
+    shortName: 'GM Atiqur Rahaman',
     typewriterTitles: [
-      'Learner & Problem Solver',
-      'Researcher',
-      'AI/ML Enthusiast',
-      'Competitive Programmer',
-      'Tech Explorer',
+      'Professor & Researcher',
+      'Computer Scientist',
+      'Academician',
     ],
-    heroBio:
-      "I'm currently pursuing a BSc at Khulna University with a strong passion for problem solving and emerging technologies. My interests lie in Artificial Intelligence, Machine Learning, and Robotics. I enjoy tackling real-world challenges through code and constantly seek opportunities to learn and build innovative solutions.",
+    heroBio: 'Professor and Researcher with a dedication to advancing computer science research and education.',
     aboutParagraphs: [
-      "I'm a driven Computer Science and Engineering student at Khulna University with hands-on expertise spanning robotics (Arduino), AI/ML, software development, and creative digital design. My passion lies in building impactful technology solutions that bridge hardware and software to solve real-world challenges.",
-      "Through academic projects and self-driven exploration, I've cultivated a versatile skill set—from programming and electronics to multimedia tools like Photoshop, Illustrator, and Premiere Pro. I thrive in collaborative environments and constantly seek new domains to innovate in, whether it's intelligent systems or interactive digital experiences.",
+      'Academic and researcher focused on cutting-edge computer science domains, machine learning, and higher education mentoring.',
     ],
     infoGrid: {
-      name: 'Azmain Inquaid Haque',
-      email: 'azmaininquaidhaque@gmail.com',
-      phone: '+8801320356909',
-      location: 'Khulna, Bangladesh',
-      field: 'Computer Science',
+      name: 'Prof. Dr. GM Atiqur Rahaman',
+      field: 'Computer Science & Engineering',
     },
-    resumeFileName: 'Resume_Azmain_Inquaid_Haque.pdf',
-    driveUrl:
-      'https://drive.google.com/drive/folders/1AjPKExOHfQOYoltJLqh_AyYTay3sRiMj?usp=drive_link',
-    drivePassword: '1234',
+    resumeFileName: 'Resume_Prof_Dr_GM_Atiqur_Rahaman.pdf',
   };
   await client.createOrReplace(profileDoc);
   console.log('✅ Created profile singleton');
 
   // 3. Social Links
   const socialLinks = [
-    { id: 'social_github', platform: 'GitHub', label: 'GitHub', url: 'https://github.com/inquaid', section: 'both', order: 1 },
-    { id: 'social_linkedin', platform: 'LinkedIn', label: 'LinkedIn', url: 'https://www.linkedin.com/in/azmain-inquaid-haque-44a4b62b1/', section: 'both', order: 2 },
-    { id: 'social_twitter', platform: 'Twitter', label: 'Twitter / X', url: 'https://x.com/azmain_inquaid', section: 'both', order: 3 },
-    { id: 'social_email', platform: 'Email', label: 'Email', url: 'mailto:azmaininquaidhaque@gmail.com', section: 'both', order: 4 },
-    { id: 'social_researchgate', platform: 'ResearchGate', label: 'ResearchGate', url: 'https://www.researchgate.net/profile/Azmain-Inquaid-Haque?ev=hdr_xprf', section: 'home', order: 5 },
-    { id: 'social_codeforces', platform: 'Codeforces', label: 'Codeforces', url: 'https://codeforces.com/profile/luffy_18', section: 'home', order: 6 },
-    { id: 'social_codechef', platform: 'CodeChef', label: 'CodeChef', url: 'https://www.codechef.com/users/turjooo', section: 'home', order: 7 },
-    { id: 'social_atcoder', platform: 'AtCoder', label: 'AtCoder', url: 'https://atcoder.jp/users/turjooo', section: 'home', order: 8 },
+    {
+      id: 'social_scholar',
+      platform: 'scholar',
+      label: 'Google Scholar',
+      url: 'https://scholar.google.com',
+      section: 'all',
+      order: 1,
+    },
+    {
+      id: 'social_rg',
+      platform: 'researchgate',
+      label: 'ResearchGate',
+      url: 'https://www.researchgate.net',
+      section: 'all',
+      order: 2,
+    },
+    {
+      id: 'social_linkedin',
+      platform: 'linkedin',
+      label: 'LinkedIn',
+      url: 'https://www.linkedin.com',
+      section: 'all',
+      order: 3,
+    },
+    {
+      id: 'social_github',
+      platform: 'github',
+      label: 'GitHub',
+      url: 'https://github.com',
+      section: 'all',
+      order: 4,
+    },
   ];
 
   for (const item of socialLinks) {
@@ -101,27 +115,27 @@ async function seed() {
   // 4. Education
   const educationItems = [
     {
-      id: 'edu_bsc',
-      period: '2023 - Present',
-      title: 'BSc in Computer Science and Engineering',
-      institution: 'Khulna University, Bangladesh',
-      description: 'Currently pursuing BSc in Computer Science and Engineering.',
+      id: 'edu_phd',
+      period: 'Completed',
+      title: 'Ph.D. in Computer Science & Engineering',
+      institution: 'University',
+      description: 'Doctoral research and dissertation in Computer Science.',
       order: 1,
     },
     {
-      id: 'edu_hsc',
-      period: '2020 - 2021',
-      title: 'Higher Secondary Certificate (HSC)',
-      institution: 'Satkhira Govt. College',
-      description: 'Completed HSC in Science group.',
+      id: 'edu_msc',
+      period: 'Completed',
+      title: 'M.Sc. in Computer Science & Engineering',
+      institution: 'University',
+      description: 'Master of Science in Computer Science & Engineering.',
       order: 2,
     },
     {
-      id: 'edu_ssc',
-      period: '2018 - 2019',
-      title: 'Secondary School Certificate (SSC)',
-      institution: 'Satkhira Govt. High School',
-      description: 'Completed SSC in Science group.',
+      id: 'edu_bsc',
+      period: 'Completed',
+      title: 'B.Sc. in Computer Science & Engineering',
+      institution: 'University',
+      description: 'Bachelor of Science in Computer Science & Engineering.',
       order: 3,
     },
   ];
@@ -142,12 +156,11 @@ async function seed() {
   // 5. Experience
   const expItems = [
     {
-      id: 'exp_tedx',
-      period: 'Fall 2024',
-      title: 'Creative Designer',
-      location: 'TEDx Khulna University',
-      description:
-        "Responsible for the creative direction and visual design of event logos, promotional posters, stage banners, and multimedia assets for TEDx Khulna University.",
+      id: 'exp_prof',
+      period: 'Present',
+      title: 'Professor',
+      location: 'Department of Computer Science & Engineering',
+      description: 'Teaching, research supervision, academic leadership, and curriculum development.',
       order: 1,
     },
   ];
@@ -168,51 +181,25 @@ async function seed() {
   // 6. Skill Categories
   const skillCategories = [
     {
-      id: 'skill_prog',
-      categoryId: 'programming',
-      title: 'Programming Languages',
+      id: 'skill_research',
+      categoryId: 'research',
+      title: 'Research & Expertise',
       order: 1,
       skills: [
-        { name: 'C/C++', iconKey: 'cpp', level: '85%', years: '3+ years' },
-        { name: 'Python', iconKey: 'python', level: '80%', years: '2+ years' },
-        { name: 'Java', iconKey: 'java', level: '75%', years: '2+ years' },
-        { name: 'PHP', iconKey: 'php', level: '95%', years: '6+ years' },
-        { name: 'Javascript', iconKey: 'javascript', level: '95%', years: '6+ years' },
+        { name: 'Machine Learning', iconKey: 'scikitlearn', level: '95%', years: '10+ years' },
+        { name: 'Artificial Intelligence', iconKey: 'python', level: '90%', years: '10+ years' },
+        { name: 'Data Science & Analytics', iconKey: 'pandas', level: '90%', years: '8+ years' },
       ],
     },
     {
-      id: 'skill_front',
-      categoryId: 'frontend',
-      title: 'Frontend Development',
+      id: 'skill_prog',
+      categoryId: 'programming',
+      title: 'Programming & Technologies',
       order: 2,
       skills: [
-        { name: 'HTML5', iconKey: 'html', level: '90%', years: '5+ years' },
-        { name: 'CSS3', iconKey: 'css', level: '85%', years: '5+ years' },
-        { name: 'React', iconKey: 'react', level: '85%', years: '3+ years' },
-        { name: 'Figma', iconKey: 'figma', level: '80%', years: '2+ years' },
-      ],
-    },
-    {
-      id: 'skill_back',
-      categoryId: 'backend',
-      title: 'Backend & Infrastructure',
-      order: 3,
-      skills: [
-        { name: 'SQL', iconKey: 'sql', level: '85%', years: '5+ years' },
-        { name: 'PostgreSQL', iconKey: 'postgresql', level: '80%', years: '2+ years' },
-        { name: 'Git & GitHub', iconKey: 'git', level: '90%', years: '4+ years' },
-        { name: 'Linux / Bash', iconKey: 'linux', level: '80%', years: '3+ years' },
-      ],
-    },
-    {
-      id: 'skill_ml',
-      categoryId: 'ml',
-      title: 'Machine Learning',
-      order: 4,
-      skills: [
-        { name: 'Scikit-learn', iconKey: 'scikitlearn', level: '75%', years: '2+ years' },
-        { name: 'Pandas & NumPy', iconKey: 'pandas', level: '80%', years: '2+ years' },
-        { name: 'OpenCV', iconKey: 'opencv', level: '75%', years: '2+ years' },
+        { name: 'Python', iconKey: 'python', level: '90%', years: '8+ years' },
+        { name: 'C/C++', iconKey: 'cpp', level: '85%', years: '10+ years' },
+        { name: 'Java', iconKey: 'java', level: '80%', years: '8+ years' },
       ],
     },
   ];
@@ -229,95 +216,29 @@ async function seed() {
   }
   console.log(`✅ Created ${skillCategories.length} skill category documents`);
 
-  // 7. Achievements (Platforms + Contests)
-  const achievements = [
-    {
-      _id: 'achieve_cf',
-      _type: 'achievement',
-      type: 'platform',
-      platformName: 'Codeforces',
-      account: 'luffy_18',
-      accountUrl: 'https://codeforces.com/profile/Luffy_18',
-      highestRating: 'Specialist (1406)',
-      solveCount: '700+ problems',
-      contestCount: '50+ contests',
-      order: 1,
-    },
-    {
-      _id: 'achieve_cc',
-      _type: 'achievement',
-      type: 'platform',
-      platformName: 'CodeChef',
-      account: 'turjooo',
-      accountUrl: 'https://www.codechef.com/users/turjooo',
-      highestRating: '3★ (1653)',
-      solveCount: '280+ problems',
-      contestCount: '25+ contests',
-      order: 2,
-    },
-    {
-      _id: 'achieve_lc',
-      _type: 'achievement',
-      type: 'platform',
-      platformName: 'LeetCode',
-      account: 'azmaininquaidhaque',
-      accountUrl: 'https://leetcode.com/u/azmaininquaidhaque/',
-      highestRating: 'Top 39%',
-      solveCount: '70+ problems',
-      contestCount: '5+ contests',
-      order: 3,
-    },
-    {
-      _id: 'contest_uihp',
-      _type: 'achievement',
-      type: 'contest',
-      contestName: 'UIHP-IC4',
-      date: 'July 16, 2025',
-      result: '1st Place (Champion)',
-      description: 'Team Name: Pulsy Drive',
-      order: 4,
-    },
-    {
-      _id: 'contest_kriupc',
-      _type: 'achievement',
-      type: 'contest',
-      contestName: 'Khulna Regional Inter University Programming Contest (KRIUPC)',
-      date: 'November 10, 2024',
-      result: '40th Place',
-      description: 'Team Name: WrongDecision',
-      order: 5,
-    },
-  ];
-
-  for (const ach of achievements) {
-    await client.createOrReplace(ach);
-  }
-  console.log(`✅ Created ${achievements.length} achievement documents`);
-
-  // 8. Activities
+  // 7. Activities
   const activities = [
     {
-      _id: 'act_tedx',
+      _id: 'act_review',
       _type: 'activity',
-      title: 'TEDx Khulna University',
-      description: 'Designed illustrations and visual branding assets for TEDx event.',
-      iconKey: 'rocket',
-      date: '2024',
-      order: 1,
-    },
-    {
-      _id: 'act_cp',
-      _type: 'activity',
-      title: 'Competitive Programming',
-      description: 'Represented Khulna University in inter-university programming contests.',
+      title: 'Peer Review & Editorial Activities',
+      description: 'Peer reviewer for prominent international journals and conferences.',
       iconKey: 'code',
-      date: '2024 - Present',
-      order: 2,
+      date: 'Ongoing',
+      order: 1,
     },
   ];
 
   for (const act of activities) {
-    await client.createOrReplace(act);
+    await client.createOrReplace({
+      _id: act.id,
+      _type: 'activity',
+      title: act.title,
+      description: act.description,
+      iconKey: act.iconKey,
+      date: act.date,
+      order: act.order,
+    });
   }
   console.log(`✅ Created ${activities.length} activity documents`);
 

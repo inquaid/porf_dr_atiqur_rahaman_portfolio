@@ -272,14 +272,16 @@ const ContactSection: React.FC<ContactSectionProps> = ({ id, isActive }) => {
   const { data: profile } = useProfile();
   const { data: contactSocialLinks } = useSocialLinks('contact');
 
-  const contactEmail = profile?.infoGrid?.email || 'azmaininquaidhaque@gmail.com';
-  const contactPhone = profile?.infoGrid?.phone || '+8801320356909';
-  const contactLocation = profile?.infoGrid?.location || 'Khulna, Bangladesh';
+  const contactEmail = profile?.infoGrid?.email || '';
+  const contactPhone = profile?.infoGrid?.phone || '';
+  const contactLocation = profile?.infoGrid?.location || '';
 
   // Initialize EmailJS once when component mounts
   useEffect(() => {
-    // Initialize with your public key
-    emailjs.init('FGP47aN5c8l7acCrq');
+    const emailJsKey = import.meta.env.VITE_EMAILJS_PUBLIC_KEY || '';
+    if (emailJsKey) {
+      emailjs.init(emailJsKey);
+    }
   }, []);
 
   const [formData, setFormData] = useState({

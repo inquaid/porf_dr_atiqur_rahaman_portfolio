@@ -5,7 +5,7 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
-const projectId = process.env.VITE_SANITY_PROJECT_ID || 'naf7d8as';
+const projectId = process.env.VITE_SANITY_PROJECT_ID || 'oxu258yz';
 const dataset = process.env.VITE_SANITY_DATASET || 'production';
 const sanityToken = process.env.SANITY_API_TOKEN;
 
@@ -42,7 +42,7 @@ function getFileUrl(source) {
   return null;
 }
 
-const supabaseUrl = process.env.VITE_SUPABASE_URL || 'https://dscbuqfnenaiukympxjr.supabase.co';
+const supabaseUrl = process.env.VITE_SUPABASE_URL || '';
 const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
 if (!serviceRoleKey) {
@@ -60,13 +60,13 @@ export async function syncSanityToSupabase() {
   for (const doc of siteSettingsDocs) {
     const row = {
       sanity_id: doc._id,
-      site_name: doc.siteName || 'Azmain Inquaid Haque',
-      site_url: doc.siteUrl || 'https://azmaininquaid.mind-byte.com',
+      site_name: doc.siteName || '',
+      site_url: doc.siteUrl || '',
       site_description: doc.siteDescription || null,
       site_keywords: doc.siteKeywords || [],
       site_image_url: getImageUrl(doc.siteImage) || '/profile-image.jpg',
-      logo_initials: doc.logoInitials || 'AI',
-      twitter_handle: doc.twitterHandle || '@azmain_inquaid',
+      logo_initials: doc.logoInitials || '',
+      twitter_handle: doc.twitterHandle || '',
       theme_color: doc.themeColor || '#6366f1',
       updated_at: new Date().toISOString(),
     };
@@ -80,8 +80,8 @@ export async function syncSanityToSupabase() {
   for (const doc of profileDocs) {
     const row = {
       sanity_id: doc._id,
-      full_name: doc.fullName || 'Azmain Inquaid Haque',
-      short_name: doc.shortName || 'Azmain Inquaid',
+      full_name: doc.fullName || '',
+      short_name: doc.shortName || '',
       profile_image_url: getImageUrl(doc.profileImage) || '/profile_pic.jpg',
       hero_image_url: getImageUrl(doc.heroImage) || '/home2.webp',
       typewriter_titles: doc.typewriterTitles || [],
@@ -89,9 +89,11 @@ export async function syncSanityToSupabase() {
       about_paragraphs: doc.aboutParagraphs || [],
       info_grid: doc.infoGrid || {},
       resume_file_url: getFileUrl(doc.resumeFile) || '/resume.pdf',
-      resume_file_name: doc.resumeFileName || 'Resume_Azmain_Inquaid_Haque.pdf',
-      drive_url: doc.driveUrl || 'https://drive.google.com',
-      drive_password: doc.drivePassword || '1234',
+      resume_file_name:
+        doc.resumeFileName ||
+        (doc.fullName ? `Resume_${doc.fullName.replace(/[^a-zA-Z0-9_-]/g, '_')}.pdf` : 'Resume.pdf'),
+      drive_url: doc.driveUrl || '',
+      drive_password: doc.drivePassword || '',
       updated_at: new Date().toISOString(),
     };
     const { error } = await supabase.from('profiles').upsert(row, { onConflict: 'sanity_id' });
@@ -195,7 +197,7 @@ export async function syncSanityToSupabase() {
       sanity_id: doc._id,
       title: doc.title,
       slug: doc.slug?.current || doc._id,
-      author: doc.author || 'Inquaid',
+      author: doc.author || '',
       image_url: getImageUrl(doc.mainImage) || '/demo.png',
       category: doc.category || 'General',
       tags: doc.tags || [],

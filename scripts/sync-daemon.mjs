@@ -2,10 +2,11 @@ import { createClient as createSanityClient } from '@sanity/client';
 import { createClient as createSupabaseClient } from '@supabase/supabase-js';
 import imageUrlBuilder from '@sanity/image-url';
 import dotenv from 'dotenv';
+import { syncSanityToSupabase } from './seed-supabase.mjs';
 
 dotenv.config();
 
-const projectId = process.env.VITE_SANITY_PROJECT_ID || 'naf7d8as';
+const projectId = process.env.VITE_SANITY_PROJECT_ID || 'oxu258yz';
 const dataset = process.env.VITE_SANITY_DATASET || 'production';
 const sanityToken = process.env.SANITY_API_TOKEN;
 
@@ -42,7 +43,7 @@ function getFileUrl(source) {
   return null;
 }
 
-const supabaseUrl = process.env.VITE_SUPABASE_URL || 'https://dscbuqfnenaiukympxjr.supabase.co';
+const supabaseUrl = process.env.VITE_SUPABASE_URL || '';
 const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
 if (!serviceRoleKey) {
@@ -94,13 +95,13 @@ async function handleDocumentChange(doc, transition) {
     case 'siteSettings':
       row = {
         sanity_id: id,
-        site_name: doc.siteName || 'Azmain Inquaid Haque',
-        site_url: doc.siteUrl || 'https://azmaininquaid.mind-byte.com',
+        site_name: doc.siteName || '',
+        site_url: doc.siteUrl || '',
         site_description: doc.siteDescription || null,
         site_keywords: doc.siteKeywords || [],
         site_image_url: getImageUrl(doc.siteImage) || '/profile-image.jpg',
-        logo_initials: doc.logoInitials || 'AI',
-        twitter_handle: doc.twitterHandle || '@azmain_inquaid',
+        logo_initials: doc.logoInitials || '',
+        twitter_handle: doc.twitterHandle || '',
         theme_color: doc.themeColor || '#6366f1',
         updated_at: new Date().toISOString(),
       };
@@ -109,8 +110,8 @@ async function handleDocumentChange(doc, transition) {
     case 'profile':
       row = {
         sanity_id: id,
-        full_name: doc.fullName || 'Azmain Inquaid Haque',
-        short_name: doc.shortName || 'Azmain Inquaid',
+        full_name: doc.fullName || '',
+        short_name: doc.shortName || '',
         profile_image_url: getImageUrl(doc.profileImage) || '/profile_pic.jpg',
         hero_image_url: getImageUrl(doc.heroImage) || '/home2.webp',
         typewriter_titles: doc.typewriterTitles || [],
@@ -118,9 +119,11 @@ async function handleDocumentChange(doc, transition) {
         about_paragraphs: doc.aboutParagraphs || [],
         info_grid: doc.infoGrid || {},
         resume_file_url: getFileUrl(doc.resumeFile) || '/resume.pdf',
-        resume_file_name: doc.resumeFileName || 'Resume_Azmain_Inquaid_Haque.pdf',
-        drive_url: doc.driveUrl || 'https://drive.google.com',
-        drive_password: doc.drivePassword || '1234',
+        resume_file_name:
+          doc.resumeFileName ||
+          (doc.fullName ? `Resume_${doc.fullName.replace(/[^a-zA-Z0-9_-]/g, '_')}.pdf` : 'Resume.pdf'),
+        drive_url: doc.driveUrl || '',
+        drive_password: doc.drivePassword || '',
         updated_at: new Date().toISOString(),
       };
       break;
@@ -194,7 +197,7 @@ async function handleDocumentChange(doc, transition) {
         sanity_id: id,
         title: doc.title,
         slug: doc.slug?.current || id,
-        author: doc.author || 'Inquaid',
+        author: doc.author || '',
         image_url: getImageUrl(doc.mainImage) || '/demo.png',
         category: doc.category || 'General',
         tags: doc.tags || [],
@@ -262,6 +265,12 @@ async function handleDocumentChange(doc, transition) {
 }
 
 console.log('📡 Starting Sanity ➔ Supabase Live Real-time Sync Daemon...');
+try {
+  console.log('🔄 Running initial sync to ensure Supabase matches Sanity...');
+  await syncSanityToSupabase();
+} catch (err) {
+  console.warn('⚠️ Initial sync warning:', err.message);
+}
 console.log('Listening for live document mutations in Sanity Content Lake...');
 
 sanity.listen('*[!(_id in path("_.**"))]').subscribe({

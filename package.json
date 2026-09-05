@@ -4,7 +4,8 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "dev": "node scripts/dev-with-sync.mjs",
+    "dev:vite": "vite",
     "dev:all": "node scripts/dev-with-sync.mjs",
     "build": "tsc && vite build && node sitemap-generator.cjs",
     "preview": "vite preview",

@@ -292,7 +292,7 @@ const ProjectsSection: React.FC<ProjectsSectionProps> = ({ id, isActive }) => {
               ? urlFor(p.mainImage).width(800).auto('format').url()
               : '/demo.png',
           techStack: p.techStack || [],
-          github: p.githubUrl || 'https://github.com/inquaid',
+          github: p.githubUrl || null,
           liveDemo: p.liveUrl || null,
           category: p.category || 'all',
         }))
@@ -353,9 +353,11 @@ const ProjectsSection: React.FC<ProjectsSectionProps> = ({ id, isActive }) => {
                   ))}
                 </ProjectTechStack>
                 <ProjectLinks>
-                  <ProjectLink href={project.github} target="_blank" rel="noopener noreferrer">
-                    <IconWrapper icon={FaGithub} /> GitHub
-                  </ProjectLink>
+                  {project.github && (
+                    <ProjectLink href={project.github} target="_blank" rel="noopener noreferrer">
+                      <IconWrapper icon={FaGithub} /> GitHub
+                    </ProjectLink>
+                  )}
                   {project.liveDemo && (
                     <ProjectLink href={project.liveDemo} target="_blank" rel="noopener noreferrer">
                       <IconWrapper icon={FaExternalLinkAlt} /> Live Demo

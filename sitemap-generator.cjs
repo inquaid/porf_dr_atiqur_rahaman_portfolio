@@ -2,7 +2,7 @@ const fs = require('fs');
 const path = require('path');
 
 // The base URL of your website (no trailing slash)
-const BASE_URL = 'https://azmaininquaid.mind-byte.com'; // Replace with your actual domain
+const BASE_URL = (process.env.VITE_SITE_URL || 'https://portfolio.local').replace(/\/$/, '');
 const LAST_MOD = new Date().toISOString().split('T')[0];
 
 // Read blog post data to generate dynamic URLs
@@ -32,7 +32,6 @@ const staticPages = [
   '/?section=resume',
   '/?section=contact',
   '/?section=blog',
-  '/name-reference.html'
 ];
 
 // Create sitemap XML content

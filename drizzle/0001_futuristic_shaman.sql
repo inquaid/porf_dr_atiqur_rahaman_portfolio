@@ -133,7 +133,7 @@ CREATE TABLE "posts" (
 	"sanity_id" varchar(255) NOT NULL,
 	"title" varchar(255) NOT NULL,
 	"slug" varchar(255) NOT NULL,
-	"author" varchar(255) DEFAULT 'Inquaid' NOT NULL,
+	"author" varchar(255) DEFAULT '' NOT NULL,
 	"image_url" text,
 	"category" varchar(100) NOT NULL,
 	"tags" jsonb,

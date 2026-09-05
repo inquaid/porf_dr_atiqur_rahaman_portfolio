@@ -87,7 +87,11 @@ const ResumeSection: React.FC<ResumeSectionProps> = ({ id, isActive }) => {
   const { data: profile } = useProfile();
 
   const resumeUrl = profile?.resumeFileUrl || '/resume.pdf';
-  const resumeFileName = profile?.resumeFileName || 'Resume_Azmain_Inquaid_Haque.pdf';
+  const resumeFileName =
+    profile?.resumeFileName ||
+    (profile?.fullName
+      ? `Resume_${profile.fullName.replace(/[^a-zA-Z0-9_-]/g, '_')}.pdf`
+      : 'Resume.pdf');
 
   return (
     <SectionContainer id={id} isActive={isActive}>

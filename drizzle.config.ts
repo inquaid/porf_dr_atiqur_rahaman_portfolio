@@ -9,6 +9,7 @@ export default defineConfig({
   dialect: 'postgresql',
   dbCredentials: {
     url:
+      process.env.DATABASE_POOLER_URL ||
       process.env.DATABASE_URL ||
       'postgresql://postgres.dscbuqfnenaiukympxjr:lOnKOimh3JKanvCD@aws-0-ap-southeast-1.pooler.supabase.com:5432/postgres',
   },

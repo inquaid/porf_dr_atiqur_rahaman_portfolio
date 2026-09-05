@@ -1,5 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
+import { useProfile } from '../../hooks/useProfile';
 
 const HeadingContainer = styled.div`
   margin-bottom: 1.5rem;
@@ -43,23 +44,28 @@ const Subtitle = styled.p`
 `;
 
 interface NameHeadingProps {
+  name?: string;
   title?: string;
   subtitle?: string;
   className?: string;
 }
 
 const NameHeading: React.FC<NameHeadingProps> = ({
+  name,
   title = 'Welcome to my portfolio',
-  subtitle = 'Researcher specializing in AI/ML and UI/UX design',
+  subtitle,
   className,
 }) => {
+  const { data: profile } = useProfile();
+  const displayName = name || profile?.fullName || '';
+
   return (
     <HeadingContainer className={className}>
       <Heading>
-        <NameSpan>Azmain Inquaid Haque</NameSpan>
+        {displayName && <NameSpan>{displayName}</NameSpan>}
         {title}
       </Heading>
-      <Subtitle>{subtitle}</Subtitle>
+      {subtitle && <Subtitle>{subtitle}</Subtitle>}
     </HeadingContainer>
   );
 };

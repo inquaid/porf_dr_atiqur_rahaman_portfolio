@@ -994,7 +994,7 @@
           "type": "varchar(255)",
           "primaryKey": false,
           "notNull": true,
-          "default": "'Inquaid'"
+          "default": "''"
         },
         "image_url": {
           "name": "image_url",

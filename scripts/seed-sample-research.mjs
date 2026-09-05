@@ -5,7 +5,7 @@ import { syncSanityToSupabase } from './seed-supabase.mjs';
 dotenv.config();
 
 const client = createClient({
-  projectId: process.env.VITE_SANITY_PROJECT_ID || 'naf7d8as',
+  projectId: process.env.VITE_SANITY_PROJECT_ID || 'oxu258yz',
   dataset: process.env.VITE_SANITY_DATASET || 'production',
   apiVersion: '2024-03-01',
   token: process.env.SANITY_API_TOKEN,
@@ -28,7 +28,7 @@ async function seedResearch() {
     conference: 'Conference on Computational Linguistics (CCL), 2024',
     year: '2024',
     abstract: 'This paper presents a novel approach to natural language understanding that requires significantly fewer computational resources than state-of-the-art models while maintaining comparable performance on benchmark evaluation sets.',
-    authors: ['Azmain Inquaid Haque', 'Collaborator One'],
+    authors: ['Prof. Dr. GM Atiqur Rahaman', 'Collaborator One'],
     pdfUrl: 'https://arxiv.org',
     doi: '10.1145/sample.2024.01',
     order: 1,

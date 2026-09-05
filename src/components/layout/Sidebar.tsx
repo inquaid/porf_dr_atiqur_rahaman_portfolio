@@ -345,7 +345,7 @@ const Sidebar: React.FC<SidebarProps> = ({ activeSection, setActiveSection }) =>
   }, [isOpen]);
 
   const { data: profile } = useProfile();
-  const profileName = profile?.shortName || profile?.fullName || 'Azmain Inquaid';
+  const profileName = profile?.shortName || profile?.fullName || '';
   const avatarImage = profile?.profileImageUrl || profile?.heroImageUrl || PLACEHOLDER_PROFILE;
 
   const toggleSidebar = () => setIsOpen(!isOpen);
